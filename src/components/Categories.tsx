@@ -1,4 +1,6 @@
-import { categories } from '@/data/mockData';
+import { useMemo } from 'react';
+import { LayoutGrid } from 'lucide-react';
+import { categories, dishes } from '@/data/mockData';
 
 interface CategoriesProps {
   selected: string | null;
@@ -6,58 +8,81 @@ interface CategoriesProps {
 }
 
 export default function Categories({ selected, onSelect }: CategoriesProps) {
+  const counts = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const dish of dishes) {
+      map.set(dish.category, (map.get(dish.category) ?? 0) + 1);
+    }
+    return map;
+  }, []);
+
+  const handleSelect = (id: string | null) => {
+    onSelect(id);
+    document.getElementById('meals')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
-    <section id="categories" className="py-20 bg-gray-50">
+    <section id="categories" className="py-20 bg-stone-50 scroll-mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <span className="text-orange-500 font-semibold text-sm uppercase tracking-wider">
-            Explore
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mt-2">
-            Browse by Category
-          </h2>
-          <p className="text-gray-500 mt-3 max-w-lg mx-auto">
-            Find exactly what you are craving from our wide selection of cuisines
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-10">
+          <div>
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-stone-900">
+              Browse by category
+            </h2>
+            <p className="text-stone-500 mt-2 max-w-lg">
+              From party jollof to late-night shawarma — pick a craving and see
+              the sample menus.
+            </p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-4">
+        <div className="grid grid-cols-3 lg:grid-cols-9 gap-3 sm:gap-4">
           <button
-            onClick={() => onSelect(null)}
-            className={`group flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all hover:scale-105 hover:shadow-lg ${
+            onClick={() => handleSelect(null)}
+            className={`group flex flex-col items-center gap-2 p-4 sm:p-5 rounded-2xl border-2 transition-all hover:shadow-md ${
               selected === null
-                ? 'border-orange-500 bg-orange-50 shadow-md'
-                : 'border-gray-200 bg-white hover:border-orange-300'
+                ? 'border-orange-600 bg-orange-50 shadow-sm'
+                : 'border-stone-200 bg-white hover:border-orange-300'
             }`}
+            aria-pressed={selected === null}
           >
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white font-bold text-lg">
-              All
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-stone-900 flex items-center justify-center text-white">
+              <LayoutGrid className="w-6 h-6 sm:w-7 sm:h-7" />
             </div>
-            <span className="text-sm font-medium text-gray-700">Everything</span>
+            <span className="text-xs sm:text-sm font-semibold text-stone-700">
+              Everything
+            </span>
+            <span className="text-xs text-stone-400">
+              {dishes.length} dishes
+            </span>
           </button>
 
           {categories.map((cat) => {
             const Icon = cat.icon;
             const isActive = selected === cat.id;
+            const count = counts.get(cat.id) ?? 0;
             return (
               <button
                 key={cat.id}
-                onClick={() => onSelect(isActive ? null : cat.id)}
-                className={`group flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all hover:scale-105 hover:shadow-lg ${
+                onClick={() => handleSelect(isActive ? null : cat.id)}
+                className={`group flex flex-col items-center gap-2 p-4 sm:p-5 rounded-2xl border-2 transition-all hover:shadow-md ${
                   isActive
-                    ? 'border-orange-500 bg-orange-50 shadow-md'
-                    : 'border-gray-200 bg-white hover:border-orange-300'
+                    ? 'border-orange-600 bg-orange-50 shadow-sm'
+                    : 'border-stone-200 bg-white hover:border-orange-300'
                 }`}
+                aria-pressed={isActive}
               >
                 <div
-                  className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 ${cat.color}`}
+                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center ${cat.color}`}
                 >
-                  <Icon className="w-7 h-7" />
+                  <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
                 </div>
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-xs sm:text-sm font-semibold text-stone-700 text-center leading-tight">
                   {cat.name}
                 </span>
-                <span className="text-xs text-gray-400">{cat.count} places</span>
+                <span className="text-xs text-stone-400">
+                  {count} dish{count === 1 ? '' : 'es'}
+                </span>
               </button>
             );
           })}

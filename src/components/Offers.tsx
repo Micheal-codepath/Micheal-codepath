@@ -1,29 +1,36 @@
 import { useState } from 'react';
 import { offers } from '@/data/mockData';
-import { Check, Copy } from 'lucide-react';
+import { Check, Copy, Ticket } from 'lucide-react';
+
+const accentText: Record<string, string> = {
+  o1: 'text-orange-700',
+  o2: 'text-emerald-700',
+  o3: 'text-stone-900',
+};
 
 export default function Offers() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const copyCode = (code: string, id: string) => {
-    navigator.clipboard.writeText(code);
+  const copyCode = async (code: string, id: string) => {
+    try {
+      await navigator.clipboard.writeText(code);
+    } catch {
+      /* clipboard unavailable — the code is still visible to type manually */
+    }
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
 
   return (
-    <section id="offers" className="py-20 bg-gray-50">
+    <section id="offers" className="py-20 bg-white scroll-mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <span className="text-orange-500 font-semibold text-sm uppercase tracking-wider">
-            Save Big
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mt-2">
-            Special Offers & Deals
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-stone-900">
+            Deals worth opening the app for
           </h2>
-          <p className="text-gray-500 mt-3 max-w-lg mx-auto">
-            Exclusive promotions and discounts to make your meals even more
-            affordable
+          <p className="text-stone-500 mt-3 max-w-lg mx-auto">
+            Sample promotions for this concept. Copy a code and try it in your
+            cart — everything runs locally in your browser.
           </p>
         </div>
 
@@ -33,44 +40,42 @@ export default function Offers() {
             return (
               <div
                 key={offer.id}
-                className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${offer.color} p-8 shadow-xl group hover:scale-105 transition-transform duration-300`}
+                className={`relative overflow-hidden rounded-3xl ${offer.color} p-8 shadow-lg`}
               >
-                <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10" />
-                <div className="absolute -bottom-12 -left-12 w-40 h-40 rounded-full bg-white/5" />
+                <div
+                  className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10"
+                  aria-hidden="true"
+                />
+                <div
+                  className="absolute -bottom-12 -left-12 w-40 h-40 rounded-full bg-white/5"
+                  aria-hidden="true"
+                />
 
                 <div className="relative z-10">
-                  <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center mb-4">
-                    <Icon className={`w-7 h-7 ${offer.textColor}`} />
+                  <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center mb-4">
+                    <Icon className="w-7 h-7 text-white" />
                   </div>
 
-                  <div
-                    className={`inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold ${offer.textColor} mb-3`}
-                  >
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 rounded-full text-xs font-bold text-white mb-3">
+                    <Ticket className="w-3.5 h-3.5" />
                     {offer.discount}
                   </div>
 
-                  <h3 className={`text-2xl font-bold ${offer.textColor} mb-2`}>
+                  <h3 className="text-2xl font-bold text-white mb-2">
                     {offer.title}
                   </h3>
-                  <p className={`${offer.textColor} opacity-90 text-sm mb-6`}>
+                  <p className="text-white/85 text-sm mb-6">
                     {offer.description}
                   </p>
 
                   <div className="flex items-center gap-2">
-                    <div
-                      className={`flex-1 px-4 py-3 bg-white/20 backdrop-blur-md rounded-xl border border-dashed ${offer.textColor} border-white/40 font-mono font-bold tracking-wider`}
-                    >
+                    <div className="flex-1 px-4 py-3 bg-white/20 rounded-xl border border-dashed border-white/40 text-white font-mono font-bold tracking-wider text-sm sm:text-base overflow-x-auto whitespace-nowrap">
                       {offer.code}
                     </div>
                     <button
                       onClick={() => copyCode(offer.code, offer.id)}
-                      className={`px-4 py-3 bg-white rounded-xl font-semibold text-sm hover:scale-105 transition-transform flex items-center gap-1.5 ${
-                        offer.id === 'o1'
-                          ? 'text-orange-600'
-                          : offer.id === 'o2'
-                            ? 'text-emerald-600'
-                            : 'text-violet-600'
-                      }`}
+                      className={`px-4 py-3 bg-white rounded-xl font-semibold text-sm hover:bg-stone-100 transition-colors flex items-center gap-1.5 flex-shrink-0 ${accentText[offer.id] ?? 'text-stone-900'}`}
+                      aria-label={`Copy code ${offer.code}`}
                     >
                       {copiedId === offer.id ? (
                         <>
@@ -88,6 +93,11 @@ export default function Offers() {
             );
           })}
         </div>
+
+        <p className="text-center text-sm text-stone-400 mt-8">
+          Invalid or retired codes (like FESTIVE24) are politely rejected at
+          checkout — try one.
+        </p>
       </div>
     </section>
   );

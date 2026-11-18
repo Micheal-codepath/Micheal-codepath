@@ -17,37 +17,64 @@ import CartDrawer from '@/components/CartDrawer';
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [restaurantFilter, setRestaurantFilter] = useState<string | null>(null);
+  const [area, setArea] = useState('Ikeja');
 
-  const handleSearch = (query: string) => {
+  const handleQueryChange = (query: string) => {
     setSearchQuery(query);
-    const restaurantsSection = document.getElementById('restaurants');
-    if (restaurantsSection && query) {
-      restaurantsSection.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleSearchSubmit = (query: string) => {
+    setSearchQuery(query);
+    if (query.trim()) {
+      document.getElementById('restaurants')?.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const handleViewMenu = (restaurantName: string) => {
+    setRestaurantFilter(restaurantName);
+    setSelectedCategory(null);
+    document.getElementById('meals')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
     <CartProvider>
-      <div className="min-h-screen bg-white">
-        <Navbar onSearchChange={handleSearch} />
-        <Hero onSearch={handleSearch} />
-        <Stats />
-        <Categories
-          selected={selectedCategory}
-          onSelect={setSelectedCategory}
-        />
-        <Restaurants searchQuery={searchQuery} />
-        <HowItWorks />
-        <Offers />
-        <FeaturedDishes
-          selectedCategory={selectedCategory}
-          searchQuery={searchQuery}
-        />
-        <Testimonials />
-        <AppDownload />
-        <Newsletter />
+      <div className="min-h-screen bg-white font-sans text-stone-900 antialiased">
+        <Navbar query={searchQuery} onSearchChange={handleQueryChange} />
+        <main>
+          <Hero
+            query={searchQuery}
+            onQueryChange={handleQueryChange}
+            onSubmitSearch={handleSearchSubmit}
+            area={area}
+            onAreaChange={setArea}
+          />
+          <Stats />
+          <Categories
+            selected={selectedCategory}
+            onSelect={setSelectedCategory}
+          />
+          <Restaurants
+            searchQuery={searchQuery}
+            onClearSearch={() => setSearchQuery('')}
+            onViewMenu={handleViewMenu}
+          />
+          <HowItWorks />
+          <Offers />
+          <FeaturedDishes
+            selectedCategory={selectedCategory}
+            restaurantFilter={restaurantFilter}
+            searchQuery={searchQuery}
+            onClearCategory={() => setSelectedCategory(null)}
+            onClearRestaurant={() => setRestaurantFilter(null)}
+            onClearSearch={() => setSearchQuery('')}
+          />
+          <Testimonials />
+          <AppDownload />
+          <Newsletter />
+        </main>
         <Footer />
-        <CartDrawer />
+        <CartDrawer defaultArea={area} />
       </div>
     </CartProvider>
   );
