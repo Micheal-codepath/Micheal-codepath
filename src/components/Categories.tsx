@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { LayoutGrid } from 'lucide-react';
 import { categories, dishes } from '@/data/mockData';
+import Reveal from '@/components/Reveal';
 
 interface CategoriesProps {
   selected: string | null;
@@ -24,22 +25,23 @@ export default function Categories({ selected, onSelect }: CategoriesProps) {
   return (
     <section id="categories" className="py-20 bg-stone-50 scroll-mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-10">
+        <Reveal className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-10">
           <div>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-stone-900">
               Browse by category
             </h2>
             <p className="text-stone-500 mt-2 max-w-lg">
-              From party jollof to late-night shawarma — pick a craving and see
-              the sample menus.
+              From party jollof to late-night shawarma — pick a craving and
+              see what is cooking.
             </p>
           </div>
-        </div>
+        </Reveal>
 
+        <Reveal delay={100}>
         <div className="grid grid-cols-3 lg:grid-cols-9 gap-3 sm:gap-4">
           <button
             onClick={() => handleSelect(null)}
-            className={`group flex flex-col items-center gap-2 p-4 sm:p-5 rounded-2xl border-2 transition-all hover:shadow-md ${
+            className={`group flex flex-col items-center gap-2 p-4 sm:p-5 rounded-2xl border-2 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-95 ${
               selected === null
                 ? 'border-orange-600 bg-orange-50 shadow-sm'
                 : 'border-stone-200 bg-white hover:border-orange-300'
@@ -65,7 +67,7 @@ export default function Categories({ selected, onSelect }: CategoriesProps) {
               <button
                 key={cat.id}
                 onClick={() => handleSelect(isActive ? null : cat.id)}
-                className={`group flex flex-col items-center gap-2 p-4 sm:p-5 rounded-2xl border-2 transition-all hover:shadow-md ${
+                className={`group flex flex-col items-center gap-2 p-4 sm:p-5 rounded-2xl border-2 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:scale-95 ${
                   isActive
                     ? 'border-orange-600 bg-orange-50 shadow-sm'
                     : 'border-stone-200 bg-white hover:border-orange-300'
@@ -87,6 +89,7 @@ export default function Categories({ selected, onSelect }: CategoriesProps) {
             );
           })}
         </div>
+        </Reveal>
       </div>
     </section>
   );

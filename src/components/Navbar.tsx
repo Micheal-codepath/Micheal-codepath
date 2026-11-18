@@ -7,30 +7,41 @@ import {
   Search,
   ChevronDown,
   Check,
+  Navigation,
 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { areas } from '@/data/mockData';
+import { useDelayedUnmount } from '@/hooks/useDelayedUnmount';
+import Logo from '@/components/Logo';
 
 interface NavbarProps {
   query: string;
   onSearchChange: (query: string) => void;
+  onTrackOrder: () => void;
 }
 
 const navLinks = [
   { label: 'Restaurants', href: '#restaurants' },
   { label: 'Meals', href: '#meals' },
   { label: 'Offers', href: '#offers' },
-  { label: 'About', href: '#about' },
+];
+
+const mobileLinks = [
+  { label: 'Home', href: '#home' },
+  { label: 'Restaurants', href: '#restaurants' },
+  { label: 'Meals', href: '#meals' },
+  { label: 'Offers', href: '#offers' },
   { label: 'Contact', href: '#contact' },
 ];
 
-export default function Navbar({ query, onSearchChange }: NavbarProps) {
+export default function Navbar({ query, onSearchChange, onTrackOrder }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [areaOpen, setAreaOpen] = useState(false);
   const [area, setArea] = useState('Lagos');
   const { totalItems, setIsOpen } = useCart();
+  const mobile = useDelayedUnmount(mobileOpen, 250);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -51,17 +62,8 @@ export default function Navbar({ query, onSearchChange }: NavbarProps) {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
-            <a href="#home" className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center shadow-md">
-                <ShoppingBag className="w-5 h-5 text-white" />
-              </div>
-              <span
-                className={`text-xl font-extrabold tracking-tight transition-colors ${
-                  onDark ? 'text-white' : 'text-stone-900'
-                }`}
-              >
-                Food<span className="text-orange-600">Go</span>
-              </span>
+            <a href="#home" aria-label="RiyalEats home">
+              <Logo variant={onDark ? 'dark' : 'light'} markSize="w-9 h-9" />
             </a>
 
             <nav className="hidden lg:flex items-center gap-8">
@@ -81,7 +83,7 @@ export default function Navbar({ query, onSearchChange }: NavbarProps) {
             <div className="flex items-center gap-2 sm:gap-3">
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
-                className={`p-2 rounded-lg transition-colors ${
+                className={`p-2 rounded-lg transition-all hover:scale-105 active:scale-95 ${
                   onDark
                     ? 'text-white hover:bg-white/10'
                     : 'text-stone-700 hover:bg-stone-100'
@@ -94,7 +96,7 @@ export default function Navbar({ query, onSearchChange }: NavbarProps) {
 
               <button
                 onClick={() => setIsOpen(true)}
-                className={`relative p-2 rounded-lg transition-colors ${
+                className={`relative p-2 rounded-lg transition-all hover:scale-105 active:scale-95 ${
                   onDark
                     ? 'text-white hover:bg-white/10'
                     : 'text-stone-700 hover:bg-stone-100'
@@ -103,7 +105,7 @@ export default function Navbar({ query, onSearchChange }: NavbarProps) {
               >
                 <ShoppingBag className="w-5 h-5" />
                 {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 bg-orange-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 bg-orange-600 text-white text-xs font-bold rounded-full flex items-center justify-center animate-in fade-in zoom-in">
                     {totalItems}
                   </span>
                 )}
@@ -122,7 +124,9 @@ export default function Navbar({ query, onSearchChange }: NavbarProps) {
                 >
                   <MapPin className="w-4 h-4" />
                   <span>{area}</span>
-                  <ChevronDown className="w-3.5 h-3.5 opacity-60" />
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 opacity-60 transition-transform duration-200 ${areaOpen ? 'rotate-180' : ''}`}
+                  />
                 </button>
                 {areaOpen && (
                   <>
@@ -130,9 +134,9 @@ export default function Navbar({ query, onSearchChange }: NavbarProps) {
                       className="fixed inset-0 z-10"
                       onClick={() => setAreaOpen(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-stone-200 py-2 z-20">
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-stone-200 py-2 z-20 animate-in fade-in slide-in-from-top-2 duration-200">
                       <p className="px-4 py-1.5 text-xs font-semibold text-stone-400">
-                        Delivery area (demo)
+                        Delivery area
                       </p>
                       {['Lagos', ...areas].map((a) => (
                         <button
@@ -154,12 +158,13 @@ export default function Navbar({ query, onSearchChange }: NavbarProps) {
                 )}
               </div>
 
-              <a
-                href="#meals"
-                className="hidden sm:inline-block px-5 py-2.5 bg-orange-600 text-white text-sm font-semibold rounded-xl shadow-md hover:bg-orange-700 transition-colors"
+              <button
+                onClick={onTrackOrder}
+                className="hidden sm:inline-flex items-center gap-1.5 px-5 py-2.5 bg-orange-600 text-white text-sm font-semibold rounded-xl shadow-md hover:bg-orange-700 hover:shadow-lg active:scale-[0.98] transition-all"
               >
-                Explore Meals
-              </a>
+                <Navigation className="w-4 h-4" />
+                Track Order
+              </button>
 
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
@@ -180,7 +185,7 @@ export default function Navbar({ query, onSearchChange }: NavbarProps) {
           </div>
 
           {searchOpen && (
-            <div className="mt-3">
+            <div className="mt-3 animate-in fade-in slide-in-from-top-2 duration-200">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
                 <input
@@ -193,7 +198,7 @@ export default function Navbar({ query, onSearchChange }: NavbarProps) {
                 {query && (
                   <button
                     onClick={() => onSearchChange('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md text-stone-400 hover:text-stone-700 hover:bg-stone-100"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
                     aria-label="Clear search"
                   >
                     <X className="w-4 h-4" />
@@ -205,48 +210,60 @@ export default function Navbar({ query, onSearchChange }: NavbarProps) {
         </div>
       </header>
 
-      {mobileOpen && (
+      {mobile.shouldRender && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div
-            className="absolute inset-0 bg-black/50"
+            className={`absolute inset-0 bg-black/50 transition-opacity duration-200 ${
+              mobile.visible ? 'opacity-100' : 'opacity-0'
+            }`}
             onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute right-0 top-0 bottom-0 w-72 bg-white shadow-2xl">
+          <div
+            className={`absolute right-0 top-0 bottom-0 w-72 bg-white shadow-2xl transition-transform duration-300 ease-out ${
+              mobile.visible ? 'translate-x-0' : 'translate-x-full'
+            }`}
+          >
             <div className="p-6">
               <div className="flex items-center justify-between mb-8">
-                <span className="text-xl font-extrabold text-stone-900">
-                  Food<span className="text-orange-600">Go</span>
-                </span>
+                <Logo markSize="w-9 h-9" />
                 <button
                   onClick={() => setMobileOpen(false)}
-                  className="p-2 rounded-lg hover:bg-stone-100"
+                  className="p-2 rounded-lg hover:bg-stone-100 transition-colors"
                   aria-label="Close menu"
                 >
                   <X className="w-5 h-5 text-stone-600" />
                 </button>
               </div>
               <nav className="flex flex-col gap-1">
-                {navLinks.map((link) => (
+                {mobileLinks.map((link, i) => (
                   <a
                     key={link.label}
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
-                    className="px-4 py-3 text-stone-700 font-medium rounded-lg hover:bg-orange-50 hover:text-orange-700 transition-colors"
+                    style={{ transitionDelay: mobile.visible ? `${i * 30}ms` : '0ms' }}
+                    className={`px-4 py-3 text-stone-700 font-medium rounded-lg hover:bg-orange-50 hover:text-orange-700 transition-all duration-300 ${
+                      mobile.visible
+                        ? 'opacity-100 translate-x-0'
+                        : 'opacity-0 translate-x-4'
+                    }`}
                   >
                     {link.label}
                   </a>
                 ))}
+                <button
+                  onClick={() => {
+                    setMobileOpen(false);
+                    onTrackOrder();
+                  }}
+                  className="mt-2 flex items-center justify-center gap-2 px-5 py-3 bg-orange-600 text-white font-semibold rounded-xl shadow-md hover:bg-orange-700 active:scale-[0.98] transition-all"
+                >
+                  <Navigation className="w-4 h-4" />
+                  Track Order
+                </button>
               </nav>
-              <a
-                href="#meals"
-                onClick={() => setMobileOpen(false)}
-                className="block text-center w-full mt-6 px-5 py-3 bg-orange-600 text-white font-semibold rounded-xl shadow-md hover:bg-orange-700 transition-colors"
-              >
-                Explore Meals
-              </a>
               <div className="mt-6 flex items-center gap-2 text-stone-500 text-sm">
                 <MapPin className="w-4 h-4" />
-                <span>Showing: {area}, Nigeria (demo)</span>
+                <span>Delivering to {area}, Lagos</span>
               </div>
             </div>
           </div>

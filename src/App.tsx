@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { CartProvider } from '@/context/CartContext';
+import { useOrderSimulation } from '@/hooks/useOrderSimulation';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import Stats from '@/components/Stats';
@@ -13,12 +14,15 @@ import AppDownload from '@/components/AppDownload';
 import Newsletter from '@/components/Newsletter';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
+import OrderTracking from '@/components/OrderTracking';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [restaurantFilter, setRestaurantFilter] = useState<string | null>(null);
   const [area, setArea] = useState('Ikeja');
+  const [trackingOpen, setTrackingOpen] = useState(false);
+  const simulation = useOrderSimulation();
 
   const handleQueryChange = (query: string) => {
     setSearchQuery(query);
@@ -37,10 +41,21 @@ function App() {
     document.getElementById('meals')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleBrowseFromTracking = () => {
+    setTrackingOpen(false);
+    requestAnimationFrame(() => {
+      document.getElementById('meals')?.scrollIntoView({ behavior: 'smooth' });
+    });
+  };
+
   return (
     <CartProvider>
       <div className="min-h-screen bg-white font-sans text-stone-900 antialiased">
-        <Navbar query={searchQuery} onSearchChange={handleQueryChange} />
+        <Navbar
+          query={searchQuery}
+          onSearchChange={handleQueryChange}
+          onTrackOrder={() => setTrackingOpen(true)}
+        />
         <main>
           <Hero
             query={searchQuery}
@@ -74,7 +89,17 @@ function App() {
           <Newsletter />
         </main>
         <Footer />
-        <CartDrawer defaultArea={area} />
+        <CartDrawer
+          defaultArea={area}
+          onPlaceOrder={simulation.startOrder}
+          onTrackOrder={() => setTrackingOpen(true)}
+        />
+        <OrderTracking
+          open={trackingOpen}
+          simulation={simulation}
+          onClose={() => setTrackingOpen(false)}
+          onBrowse={handleBrowseFromTracking}
+        />
       </div>
     </CartProvider>
   );

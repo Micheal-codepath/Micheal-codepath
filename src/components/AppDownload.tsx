@@ -1,21 +1,22 @@
 import { Smartphone, Bike, Ticket, ReceiptText } from 'lucide-react';
 import { formatNaira } from '@/utils/pricing';
+import Reveal from '@/components/Reveal';
 
 const features = [
   {
     icon: Ticket,
-    title: 'Sample menus to explore',
-    description: 'Nigerian classics plus a few international favourites',
-  },
-  {
-    icon: ReceiptText,
-    title: 'Honest demo pricing',
-    description: 'Naira prices with clearly labelled illustrative fees',
+    title: 'Exclusive app deals',
+    description: 'Flash sales and app-only discounts, straight to your phone',
   },
   {
     icon: Bike,
-    title: 'Checkout walkthrough',
-    description: 'Try the full cart-to-confirmation flow in your browser',
+    title: 'Live order tracking',
+    description: 'Follow your rider from the kitchen to your door',
+  },
+  {
+    icon: ReceiptText,
+    title: 'One-tap reorder',
+    description: 'Your favourites saved and ready whenever hunger strikes',
   },
 ];
 
@@ -29,6 +30,7 @@ export default function AppDownload() {
   return (
     <section className="py-20 bg-stone-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Reveal>
         <div className="relative overflow-hidden rounded-3xl bg-stone-950 shadow-2xl">
           <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-orange-600/15 blur-3xl" aria-hidden="true" />
 
@@ -37,7 +39,7 @@ export default function AppDownload() {
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full border border-white/15 mb-6">
                 <Smartphone className="w-4 h-4 text-amber-400" />
                 <span className="text-white text-sm font-medium">
-                  App concept preview
+                  RiyalEats on the go
                 </span>
               </div>
 
@@ -46,17 +48,16 @@ export default function AppDownload() {
               </h2>
 
               <p className="text-stone-300 mb-8 max-w-md">
-                This concept imagines a FoodGo mobile app built around Nigerian
-                kitchens — quick reorders, area-based kitchens and delivery
-                updates. The phone mockup is an illustration, not a download.
+                Order in seconds, track your rider live and unlock app-only
+                deals. Everything you love about RiyalEats, wherever you are.
               </p>
 
               <div className="space-y-4 mb-8">
                 {features.map((feature) => {
                   const Icon = feature.icon;
                   return (
-                    <div key={feature.title} className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                    <div key={feature.title} className="flex items-start gap-3 group">
+                      <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-white/15 group-hover:scale-105 transition-all duration-300">
                         <Icon className="w-5 h-5 text-amber-400" />
                       </div>
                       <div>
@@ -75,21 +76,21 @@ export default function AppDownload() {
               <div className="flex flex-wrap gap-3">
                 <a
                   href="#contact"
-                  className="px-6 py-3.5 bg-orange-600 text-white font-semibold rounded-xl hover:bg-orange-700 transition-colors"
+                  className="px-6 py-3.5 bg-orange-600 text-white font-semibold rounded-xl hover:bg-orange-700 hover:shadow-lg active:scale-[0.98] transition-all"
                 >
-                  Get launch updates
+                  Get tasty updates
                 </a>
                 <a
                   href="#meals"
-                  className="px-6 py-3.5 bg-transparent text-white font-semibold rounded-xl border-2 border-white/25 hover:border-white/60 transition-colors"
+                  className="px-6 py-3.5 bg-transparent text-white font-semibold rounded-xl border-2 border-white/25 hover:border-white/60 active:scale-[0.98] transition-all"
                 >
-                  Explore sample menus
+                  Explore the menu
                 </a>
               </div>
             </div>
 
             <div className="relative hidden lg:flex justify-center" aria-hidden="true">
-              <div className="relative">
+              <div className="relative animate-in fade-in slide-in-from-right duration-1000">
                 <div className="relative w-64 h-[500px] bg-stone-900 rounded-[2.5rem] border-4 border-stone-700 shadow-2xl p-3 overflow-hidden">
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-6 bg-stone-950 rounded-b-2xl z-10" />
                   <div className="w-full h-full rounded-[2rem] overflow-hidden bg-stone-950">
@@ -102,7 +103,7 @@ export default function AppDownload() {
                           </p>
                         </div>
                         <div className="w-9 h-9 rounded-full bg-orange-600 flex items-center justify-center">
-                          <span className="text-white font-bold text-sm">F</span>
+                          <span className="text-white font-bold text-sm">R</span>
                         </div>
                       </div>
 
@@ -152,7 +153,7 @@ export default function AppDownload() {
                   </div>
                 </div>
 
-                <div className="absolute -right-6 top-20 bg-white rounded-2xl shadow-2xl p-3 flex items-center gap-2">
+                <div className="absolute -right-6 top-20 bg-white rounded-2xl shadow-2xl p-3 flex items-center gap-2 animate-in fade-in slide-in-from-right duration-700 delay-500">
                   <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
                     <Bike className="w-5 h-5 text-emerald-700" />
                   </div>
@@ -162,19 +163,17 @@ export default function AppDownload() {
                   </div>
                 </div>
 
-                <div className="absolute -left-6 bottom-32 bg-white rounded-2xl shadow-2xl p-3">
+                <div className="absolute -left-6 bottom-32 bg-white rounded-2xl shadow-2xl p-3 animate-in fade-in slide-in-from-left duration-700 delay-700">
                   <p className="text-xs text-stone-500">Delivery fee</p>
                   <p className="font-bold text-stone-900 text-sm">
-                    {formatNaira(1200)}{' '}
-                    <span className="font-normal text-stone-400">
-                      (illustrative)
-                    </span>
+                    {formatNaira(1200)}
                   </p>
                 </div>
               </div>
             </div>
           </div>
         </div>
+        </Reveal>
       </div>
     </section>
   );

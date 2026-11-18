@@ -4,6 +4,7 @@ import { dishes, categories } from '@/data/mockData';
 import { formatNaira } from '@/utils/pricing';
 import { useCart } from '@/context/CartContext';
 import FoodImage from '@/components/FoodImage';
+import Reveal from '@/components/Reveal';
 
 interface FeaturedDishesProps {
   selectedCategory: string | null;
@@ -69,14 +70,14 @@ export default function FeaturedDishes({
   return (
     <section id="meals" className="py-20 bg-stone-50 scroll-mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
+        <Reveal className="text-center mb-10">
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-stone-900">
             {searchQuery ? (
               <>
                 Results for “{searchQuery}”
               </>
             ) : restaurantFilter ? (
-              <>{restaurantFilter} — sample menu</>
+              <>{restaurantFilter}</>
             ) : selectedCategory ? (
               <>{categoryName}</>
             ) : (
@@ -84,7 +85,7 @@ export default function FeaturedDishes({
             )}
           </h2>
           <p className="text-stone-500 mt-2 max-w-lg mx-auto">
-            {filtered.length} sample dish{filtered.length === 1 ? '' : 'es'}
+            {filtered.length} dish{filtered.length === 1 ? '' : 'es'}
             {hasFilters ? ' match your filters' : ' across Lagos kitchens'}.
             Add them to your cart and check out in seconds.
           </p>
@@ -117,10 +118,10 @@ export default function FeaturedDishes({
               )}
             </div>
           )}
-        </div>
+        </Reveal>
 
         {filtered.length === 0 ? (
-          <div className="text-center py-16 max-w-md mx-auto">
+          <div className="text-center py-16 max-w-md mx-auto animate-in fade-in duration-500">
             <div className="w-16 h-16 rounded-2xl bg-white border border-stone-200 flex items-center justify-center mx-auto mb-4">
               <SearchX className="w-8 h-8 text-stone-400" />
             </div>
@@ -129,7 +130,7 @@ export default function FeaturedDishes({
             </h3>
             <p className="text-stone-500 mb-6">
               Try a different search, or clear your filters to browse all 24
-              sample dishes.
+              dishes.
             </p>
             <button
               onClick={clearAll}
@@ -140,19 +141,20 @@ export default function FeaturedDishes({
           </div>
         ) : (
           <>
+            <Reveal delay={100}>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {displayed.map((dish) => {
                 const qty = getQuantity(dish.id);
                 return (
                   <article
                     key={dish.id}
-                    className="group bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col"
+                    className="group bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
                   >
                     <div className="relative h-52 overflow-hidden">
                       <FoodImage
                         src={dish.image}
                         alt={dish.name}
-                        className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                        className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-500 ease-out"
                       />
                       <div className="absolute top-3 left-3 flex gap-1.5">
                         {dish.popular && (
@@ -201,7 +203,7 @@ export default function FeaturedDishes({
                         {qty === 0 ? (
                           <button
                             onClick={() => addItem(dish)}
-                            className="flex items-center gap-1.5 px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-lg shadow-md hover:bg-orange-700 transition-colors"
+                            className="flex items-center gap-1.5 px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-lg shadow-md hover:bg-orange-700 hover:shadow-lg active:scale-95 transition-all"
                             aria-label={`Add ${dish.name} to cart`}
                           >
                             <Plus className="w-4 h-4" /> Add
@@ -233,6 +235,7 @@ export default function FeaturedDishes({
                 );
               })}
             </div>
+            </Reveal>
 
             {filtered.length > 8 && (
               <div className="text-center mt-10">

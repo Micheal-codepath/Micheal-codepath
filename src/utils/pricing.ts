@@ -8,18 +8,18 @@ export function formatNaira(amount: number): string {
   return `${NAIRA}${Math.round(amount).toLocaleString('en-NG')}`;
 }
 
-/** Flat illustrative delivery fee shown in the demo cart (in Naira). */
+/** Flat delivery fee shown in the cart (in Naira). */
 export const STANDARD_DELIVERY_FEE = 1200;
 
-/** Discounted subtotal at or above which the illustrative fee is waived. */
+/** Discounted subtotal at or above which the delivery fee is waived. */
 export const FREE_DELIVERY_THRESHOLD = 15000;
 
 /**
- * Work out the clearly-labelled illustrative delivery fee for the demo cart.
+ * Work out the delivery fee for the cart.
  * Returns 0 for an empty cart, a free-delivery promo, or orders above the
  * free-delivery threshold.
  */
-export function illustrativeDeliveryFee(
+export function deliveryFeeFor(
   subtotalAfterDiscount: number,
   hasFreeDeliveryPromo: boolean,
 ): number {
@@ -53,7 +53,7 @@ export function discountFor(promo: Offer, subtotal: number): number {
 }
 
 /**
- * Validate a demo promo code against the local offer list.
+ * Validate a promo code against the local offer list.
  * Never touches a network; everything is defined in mockData.
  */
 export function applyPromoCode(
@@ -72,7 +72,7 @@ export function applyPromoCode(
   if (!promo)
     return {
       status: 'invalid',
-      message: `"${code}" is not a valid demo code. Try one from the Offers section.`,
+      message: `"${code}" is not a valid code. Check the spelling or try one from Offers.`,
     };
 
   if (subtotal < promo.minSubtotal)
@@ -99,14 +99,14 @@ export function applyPromoCode(
   };
 }
 
-/** Demo order reference, e.g. "FG-7KQ2XA". Not a real order id. */
+/** Local order reference, e.g. "RE-7KQ2XA". */
 export function generateOrderRef(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let ref = '';
   for (let i = 0; i < 6; i += 1) {
     ref += chars[Math.floor(Math.random() * chars.length)];
   }
-  return `FG-${ref}`;
+  return `RE-${ref}`;
 }
 
 /** Accepts 0803..., 081..., 090..., 070... and +234 variants. */

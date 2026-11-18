@@ -1,25 +1,26 @@
 import { Search, ShoppingBag, Bike, CheckCircle2 } from 'lucide-react';
+import Reveal from '@/components/Reveal';
 
 const steps = [
   {
     icon: Search,
     title: 'Choose your food',
     description:
-      'Browse sample menus by category, kitchen or craving — from amala to shawarma.',
+      'Browse menus by category, kitchen or craving — from amala to shawarma.',
     tile: 'bg-orange-600',
   },
   {
     icon: ShoppingBag,
-    title: 'Place a demo order',
+    title: 'Place your order',
     description:
-      'Add meals to your cart, try a promo code and check out. No real payment is taken.',
+      'Add meals to your cart, apply a promo code and check out in seconds.',
     tile: 'bg-stone-900',
   },
   {
     icon: Bike,
     title: 'Track your rider',
     description:
-      'In the live product, a rider picks up your food and you follow them to your door.',
+      'Your rider picks up your food and you follow them all the way to your door.',
     tile: 'bg-emerald-700',
   },
   {
@@ -35,16 +36,16 @@ export default function HowItWorks() {
   return (
     <section id="about" className="py-20 bg-stone-50 scroll-mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-14">
+        <Reveal className="text-center mb-14">
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-stone-900">
-            How FoodGo would work
+            How RiyalEats works
           </h2>
           <p className="text-stone-500 mt-3 max-w-lg mx-auto">
-            This concept shows how ordering would flow — from craving to
-            doorstep. No real orders are placed here.
+            From craving to doorstep in four easy steps. It is that simple.
           </p>
-        </div>
+        </Reveal>
 
+        <Reveal delay={100}>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
           {steps.map((step, index) => {
             const Icon = step.icon;
@@ -56,7 +57,7 @@ export default function HowItWorks() {
                     aria-hidden="true"
                   />
                 )}
-                <div className="relative bg-white rounded-2xl p-6 shadow-sm border border-stone-200 hover:shadow-md transition-shadow text-center h-full">
+                <div className="relative bg-white rounded-2xl p-6 shadow-sm border border-stone-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-center h-full">
                   <div
                     className={`w-20 h-20 rounded-2xl ${step.tile} flex items-center justify-center mx-auto mb-4 shadow-md`}
                   >
@@ -76,6 +77,7 @@ export default function HowItWorks() {
             );
           })}
         </div>
+        </Reveal>
       </div>
     </section>
   );

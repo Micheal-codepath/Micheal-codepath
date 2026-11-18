@@ -3,6 +3,7 @@ import { Star, Clock, MapPin, Heart, SearchX, ArrowRight } from 'lucide-react';
 import { restaurants } from '@/data/mockData';
 import { formatNaira } from '@/utils/pricing';
 import FoodImage from '@/components/FoodImage';
+import Reveal from '@/components/Reveal';
 
 interface RestaurantsProps {
   searchQuery: string;
@@ -60,14 +61,14 @@ export default function Restaurants({
   return (
     <section id="restaurants" className="py-20 bg-white scroll-mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+        <Reveal className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
           <div>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-stone-900">
               Kitchens around Lagos
             </h2>
             <p className="text-stone-500 mt-2">
-              {filtered.length} sample restaurant
-              {filtered.length === 1 ? '' : 's'}
+              {filtered.length} restaurant
+              {filtered.length === 1 ? '' : 's'} near you
               {searchQuery && (
                 <>
                   {' '}
@@ -88,7 +89,7 @@ export default function Restaurants({
                 key={f.id}
                 onClick={() => setFilter(f.id)}
                 aria-pressed={filter === f.id}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all active:scale-95 ${
                   filter === f.id
                     ? 'bg-orange-600 text-white shadow-md'
                     : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
@@ -98,10 +99,10 @@ export default function Restaurants({
               </button>
             ))}
           </div>
-        </div>
+        </Reveal>
 
         {filtered.length === 0 ? (
-          <div className="text-center py-20 max-w-md mx-auto">
+          <div className="text-center py-20 max-w-md mx-auto animate-in fade-in duration-500">
             <div className="w-16 h-16 rounded-2xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
               <SearchX className="w-8 h-8 text-stone-400" />
             </div>
@@ -109,7 +110,7 @@ export default function Restaurants({
               No kitchens found
             </h3>
             <p className="text-stone-500 mb-6">
-              Nothing in our sample list matches “{searchQuery}”. Try jollof,
+              Nothing on RiyalEats matches “{searchQuery}”. Try jollof,
               suya, or an area like Yaba.
             </p>
             <button
@@ -120,17 +121,18 @@ export default function Restaurants({
             </button>
           </div>
         ) : (
+          <Reveal delay={100}>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {filtered.map((restaurant) => (
               <article
                 key={restaurant.id}
-                className="group bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col"
+                className="group bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
               >
                 <div className="relative h-48 overflow-hidden">
                   <FoodImage
                     src={restaurant.image}
                     alt={restaurant.name}
-                    className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-500 ease-out"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
                   <button
@@ -210,7 +212,7 @@ export default function Restaurants({
 
                   <button
                     onClick={() => onViewMenu(restaurant.name)}
-                    className="mt-3 w-full py-2.5 rounded-xl bg-orange-50 text-orange-700 text-sm font-semibold hover:bg-orange-100 transition-colors flex items-center justify-center gap-1.5"
+                    className="mt-3 w-full py-2.5 rounded-xl bg-orange-50 text-orange-700 text-sm font-semibold hover:bg-orange-100 active:scale-[0.98] transition-all flex items-center justify-center gap-1.5"
                   >
                     View menu <ArrowRight className="w-4 h-4" />
                   </button>
@@ -218,6 +220,7 @@ export default function Restaurants({
               </article>
             ))}
           </div>
+          </Reveal>
         )}
       </div>
     </section>

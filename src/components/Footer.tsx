@@ -1,5 +1,6 @@
-import { ShoppingBag, MapPin, Mail } from 'lucide-react';
+import { MapPin, Mail } from 'lucide-react';
 import { areas } from '@/data/mockData';
+import Logo from '@/components/Logo';
 
 const footerSections = [
   {
@@ -15,8 +16,8 @@ const footerSections = [
     title: 'Company',
     links: [
       { label: 'How it works', href: '#about' },
-      { label: 'Preview reviews', href: '#reviews' },
-      { label: 'Launch updates', href: '#contact' },
+      { label: 'Customer reviews', href: '#reviews' },
+      { label: 'Contact us', href: '#contact' },
     ],
   },
   {
@@ -31,27 +32,21 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
           <div className="col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center shadow-md">
-                <ShoppingBag className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-extrabold text-white">
-                Food<span className="text-orange-500">Go</span>
-              </span>
+            <div className="mb-4">
+              <Logo variant="dark" />
             </div>
             <p className="text-sm leading-relaxed mb-6 max-w-xs">
-              Your favourite Nigerian meals, delivered. This page is a
-              frontend concept with sample kitchens, menus and prices — no
-              real orders are placed.
+              Your favourite Nigerian meals, delivered hot and fast. Order
+              from the best kitchens across Lagos in just a few taps.
             </p>
             <div className="space-y-2 text-sm">
               <p className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-orange-500" />
-                Lagos, Nigeria (concept)
+                Lagos, Nigeria
               </p>
               <p className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-orange-500" />
-                hello@foodgo.ng (demo)
+                hello@riyaleats.ng
               </p>
             </div>
           </div>
@@ -79,10 +74,10 @@ export default function Footer() {
 
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-sm">
-            &copy; 2026 FoodGo • Frontend concept. Sample data only.
+            &copy; 2026 RiyalEats. All rights reserved.
           </p>
           <p className="text-sm text-stone-500">
-            Prices in Naira (₦) are illustrative.
+            Prices in Naira (₦).
           </p>
         </div>
       </div>

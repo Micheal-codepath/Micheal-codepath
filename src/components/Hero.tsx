@@ -52,29 +52,29 @@ export default function Hero({ query, onQueryChange, onSubmitSearch, area, onAre
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-28 pb-24">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full border border-white/15 mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full border border-white/15 mb-6 animate-in fade-in slide-in-from-bottom-3 duration-500">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute h-2 w-2 rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative rounded-full h-2 w-2 bg-emerald-400" />
               </span>
               <span className="text-white text-sm font-medium">
-                Lagos • Frontend concept preview
+                Fast delivery across Lagos
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.08] mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.08] mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
               Your favourite <span className="text-amber-400">Nigerian meals</span>,
               delivered.
             </h1>
 
-            <p className="text-lg text-stone-300 mb-8 max-w-lg mx-auto lg:mx-0">
-              From smoky party jollof to freshly made amala, explore sample
-              menus from kitchens around Lagos.
+            <p className="text-lg text-stone-300 mb-8 max-w-lg mx-auto lg:mx-0 animate-in fade-in slide-in-from-bottom-5 duration-700">
+              From smoky party jollof to freshly made amala, discover meals
+              from kitchens around Lagos.
             </p>
 
             <form
               onSubmit={handleSubmit}
-              className="bg-white rounded-2xl shadow-2xl p-2 flex flex-col sm:flex-row gap-2 max-w-2xl mx-auto lg:mx-0"
+              className="bg-white rounded-2xl shadow-2xl p-2 flex flex-col sm:flex-row gap-2 max-w-2xl mx-auto lg:mx-0 animate-in fade-in slide-in-from-bottom-6 duration-700"
             >
               <label className="flex items-center gap-2 px-3 py-2 sm:border-r border-stone-200 sm:max-w-44">
                 <MapPin className="w-5 h-5 text-orange-600 flex-shrink-0" />
@@ -107,13 +107,13 @@ export default function Hero({ query, onQueryChange, onSubmitSearch, area, onAre
               </div>
               <button
                 type="submit"
-                className="px-6 py-3 bg-orange-600 text-white font-semibold rounded-xl shadow-md hover:bg-orange-700 transition-colors whitespace-nowrap"
+                className="px-6 py-3 bg-orange-600 text-white font-semibold rounded-xl shadow-md hover:bg-orange-700 hover:shadow-lg active:scale-[0.98] transition-all whitespace-nowrap"
               >
                 Search
               </button>
             </form>
 
-            <div className="mt-5 flex flex-wrap items-center justify-center lg:justify-start gap-2">
+            <div className="mt-5 flex flex-wrap items-center justify-center lg:justify-start gap-2 animate-in fade-in duration-1000">
               <span className="text-stone-400 text-sm">Popular:</span>
               {popularSearches.map((term) => (
                 <button
@@ -126,29 +126,29 @@ export default function Hero({ query, onQueryChange, onSubmitSearch, area, onAre
               ))}
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-3 justify-center lg:justify-start">
+            <div className="mt-8 flex flex-wrap gap-3 justify-center lg:justify-start animate-in fade-in duration-1000">
               <a
                 href="#meals"
-                className="px-7 py-3.5 bg-orange-600 text-white font-semibold rounded-xl shadow-lg hover:bg-orange-700 transition-colors"
+                className="px-7 py-3.5 bg-orange-600 text-white font-semibold rounded-xl shadow-lg hover:bg-orange-700 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all"
               >
                 Explore Meals
               </a>
               <a
                 href="#restaurants"
-                className="px-7 py-3.5 bg-transparent text-white font-semibold rounded-xl border-2 border-white/30 hover:border-white/60 hover:bg-white/5 transition-colors"
+                className="px-7 py-3.5 bg-transparent text-white font-semibold rounded-xl border-2 border-white/30 hover:border-white/60 hover:bg-white/5 active:scale-[0.98] transition-all"
               >
                 Find Restaurants
               </a>
             </div>
 
-            <div className="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-4 text-white">
+            <div className="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-4 text-white animate-in fade-in duration-1000">
               <div className="flex items-center gap-2.5">
                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
                   <Star className="w-5 h-5 text-amber-400" />
                 </div>
                 <div className="text-left">
                   <p className="font-bold text-lg leading-none">4.8</p>
-                  <p className="text-xs text-stone-400 mt-1">Preview rating</p>
+                  <p className="text-xs text-stone-400 mt-1">Customer rating</p>
                 </div>
               </div>
               <div className="flex items-center gap-2.5">
@@ -157,7 +157,7 @@ export default function Hero({ query, onQueryChange, onSubmitSearch, area, onAre
                 </div>
                 <div className="text-left">
                   <p className="font-bold text-lg leading-none">30 min</p>
-                  <p className="text-xs text-stone-400 mt-1">Demo delivery</p>
+                  <p className="text-xs text-stone-400 mt-1">Avg. delivery</p>
                 </div>
               </div>
               <div className="flex items-center gap-2.5">
@@ -165,14 +165,14 @@ export default function Hero({ query, onQueryChange, onSubmitSearch, area, onAre
                   <UtensilsCrossed className="w-5 h-5 text-orange-400" />
                 </div>
                 <div className="text-left">
-                  <p className="font-bold text-lg leading-none">24</p>
-                  <p className="text-xs text-stone-400 mt-1">Sample dishes</p>
+                  <p className="font-bold text-lg leading-none">24+</p>
+                  <p className="text-xs text-stone-400 mt-1">Signature dishes</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="hidden lg:block relative">
+          <div className="hidden lg:block relative animate-in fade-in slide-in-from-right duration-1000">
             <div className="relative grid grid-cols-2 gap-4">
               <div className="space-y-4">
                 {heroImages.slice(0, 2).map((img) => (
@@ -198,22 +198,22 @@ export default function Hero({ query, onQueryChange, onSubmitSearch, area, onAre
               </div>
             </div>
 
-            <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-2xl p-4 flex items-center gap-3">
+            <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-2xl p-4 flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500">
               <div className="w-12 h-12 rounded-full bg-emerald-600 flex items-center justify-center">
                 <Clock className="w-6 h-6 text-white" />
               </div>
               <div>
-                <p className="text-xs text-stone-500">Demo delivery in</p>
+                <p className="text-xs text-stone-500">Delivery in</p>
                 <p className="font-bold text-stone-900 text-lg leading-tight">30 min</p>
               </div>
             </div>
 
-            <div className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-2xl p-4 flex items-center gap-3">
+            <div className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-2xl p-4 flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-700 delay-700">
               <div className="w-12 h-12 rounded-full bg-orange-600 flex items-center justify-center">
                 <Star className="w-6 h-6 text-white" />
               </div>
               <div>
-                <p className="text-xs text-stone-500">Preview rating</p>
+                <p className="text-xs text-stone-500">Rated</p>
                 <p className="font-bold text-stone-900 text-lg leading-tight">4.8 / 5</p>
               </div>
             </div>

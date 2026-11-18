@@ -30,7 +30,7 @@ export interface Restaurant {
   rating: number;
   reviews: number;
   deliveryTime: string;
-  /** Illustrative delivery fee in Naira. 0 means free delivery. */
+  /** Delivery fee in Naira. 0 means free delivery. */
   deliveryFee: number;
   image: string;
   tags: string[];
@@ -85,7 +85,7 @@ export interface Stat {
   icon: LucideIcon;
 }
 
-/** Lagos neighbourhoods featured in this frontend concept. */
+/** Lagos neighbourhoods served by RiyalEats. */
 export const areas: string[] = [
   'Ikeja',
   'Yaba',
@@ -593,28 +593,28 @@ export const testimonials: Testimonial[] = [
   {
     id: 't1',
     name: 'Adaeze Okafor',
-    role: 'Preview tester • Yaba',
+    role: 'Customer • Yaba',
     rating: 5,
-    text: 'The jollof selection alone won me over. I found my kind of amala spot within minutes of browsing the sample menus.',
+    text: 'The jollof selection alone won me over. I found my kind of amala spot within minutes of browsing the menus.',
   },
   {
     id: 't2',
     name: 'Tunde Bakare',
-    role: 'Preview tester • Ikeja',
+    role: 'Customer • Ikeja',
     rating: 5,
     text: 'Clean layout, clear prices in naira, and the cart maths actually adds up. This feels built for us.',
   },
   {
     id: 't3',
     name: 'Ngozi Eze',
-    role: 'Preview tester • Lekki',
+    role: 'Customer • Lekki',
     rating: 4,
-    text: 'I love that swallow and soups get their own category. The demo checkout was simple from cart to confirmation.',
+    text: 'I love that swallow and soups get their own category. Checkout was simple from cart to confirmation.',
   },
   {
     id: 't4',
     name: 'Ibrahim Musa',
-    role: 'Preview tester • Surulere',
+    role: 'Customer • Surulere',
     rating: 5,
     text: 'Suya, boli and zobo on one platform with honest delivery fees. I am looking forward to the real launch.',
   },
@@ -659,7 +659,7 @@ export const offers: Offer[] = [
   },
 ];
 
-/** Retired demo codes kept so the cart can explain them as expired. */
+/** Retired codes kept so the cart can explain them as expired. */
 export const expiredPromos: { code: string; message: string }[] = [
   {
     code: 'FESTIVE24',
@@ -668,8 +668,8 @@ export const expiredPromos: { code: string; message: string }[] = [
 ];
 
 export const stats: Stat[] = [
-  { label: 'Sample restaurants', value: '10', icon: Store },
-  { label: 'Sample dishes', value: '24', icon: UtensilsCrossed },
+  { label: 'Partner restaurants', value: '10+', icon: Store },
+  { label: 'Signature dishes', value: '24+', icon: UtensilsCrossed },
   { label: 'Food categories', value: '8', icon: LayoutGrid },
   { label: 'Lagos areas shown', value: '7', icon: MapPin },
 ];

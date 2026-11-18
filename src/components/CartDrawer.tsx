@@ -11,24 +11,29 @@ import {
   CheckCircle2,
   AlertCircle,
   PartyPopper,
+  Navigation,
 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { offers, expiredPromos, areas, type Offer } from '@/data/mockData';
+import type { OrderSnapshot } from '@/data/tracking';
 import {
   formatNaira,
-  illustrativeDeliveryFee,
+  deliveryFeeFor,
   discountFor,
   applyPromoCode,
   generateOrderRef,
   isValidNigerianPhone,
   FREE_DELIVERY_THRESHOLD,
 } from '@/utils/pricing';
+import { useDelayedUnmount } from '@/hooks/useDelayedUnmount';
 import FoodImage from '@/components/FoodImage';
 
 type Step = 'cart' | 'details' | 'done';
 
 interface CartDrawerProps {
   defaultArea: string;
+  onPlaceOrder: (order: OrderSnapshot) => void;
+  onTrackOrder: () => void;
 }
 
 interface DetailsForm {
@@ -47,7 +52,14 @@ const emptyForm = (area: string): DetailsForm => ({
   notes: '',
 });
 
-export default function CartDrawer({ defaultArea }: CartDrawerProps) {
+function primaryRestaurant(items: { restaurant: string }[]): string {
+  if (items.length === 0) return '';
+  const first = items[0].restaurant;
+  const others = new Set(items.map((i) => i.restaurant)).size - 1;
+  return others > 0 ? `${first} + ${others} more` : first;
+}
+
+export default function CartDrawer({ defaultArea, onPlaceOrder, onTrackOrder }: CartDrawerProps) {
   const {
     items,
     isOpen,
@@ -70,14 +82,15 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
   const [errors, setErrors] = useState<Partial<DetailsForm>>({});
   const [orderRef, setOrderRef] = useState('');
   const [confirmedTotal, setConfirmedTotal] = useState(0);
-  const [confirmedMeta, setConfirmedMeta] = useState({ name: '', area: '' });
+  const [confirmedMeta, setConfirmedMeta] = useState({ name: '', area: '', restaurant: '' });
+  const mount = useDelayedUnmount(isOpen, 250);
 
   const subtotal = totalPrice;
   const promoValid =
     appliedPromo !== null && subtotal >= appliedPromo.minSubtotal;
   const discount = promoValid ? discountFor(appliedPromo, subtotal) : 0;
   const freeDelivery = promoValid && appliedPromo.kind === 'freeDelivery';
-  const deliveryFee = illustrativeDeliveryFee(subtotal - discount, freeDelivery);
+  const deliveryFee = deliveryFeeFor(subtotal - discount, freeDelivery);
   const total = subtotal - discount + deliveryFee;
 
   const close = () => {
@@ -129,11 +142,37 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
     return Object.keys(next).length === 0;
   };
 
-  const placeDemoOrder = () => {
+  const placeOrder = () => {
     if (!validateDetails()) return;
-    setOrderRef(generateOrderRef());
+    const ref = generateOrderRef();
+    onPlaceOrder({
+      ref,
+      items: items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        restaurant: item.restaurant,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.image,
+      })),
+      subtotal,
+      discount,
+      deliveryFee,
+      total,
+      customerName: form.fullName.trim(),
+      phone: form.phone.trim(),
+      address: form.address.trim(),
+      area: form.area,
+      notes: form.notes.trim(),
+      placedAt: Date.now(),
+    });
+    setOrderRef(ref);
     setConfirmedTotal(total);
-    setConfirmedMeta({ name: form.fullName.trim(), area: form.area });
+    setConfirmedMeta({
+      name: form.fullName.trim(),
+      area: form.area,
+      restaurant: primaryRestaurant(items),
+    });
     setStep('done');
     clearCart();
     setAppliedPromo(null);
@@ -146,27 +185,33 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
     setStep('details');
   };
 
-  if (!isOpen) return null;
+  if (!mount.shouldRender) return null;
 
   const inputClass = (hasError: boolean) =>
-    `w-full px-4 py-3 bg-stone-50 border rounded-xl text-stone-800 placeholder-stone-400 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600 focus:border-transparent ${
+    `w-full px-4 py-3 bg-stone-50 border rounded-xl text-stone-800 placeholder-stone-400 text-sm focus:outline-none focus:ring-2 focus:ring-orange-600 focus:border-transparent transition-shadow ${
       hasError ? 'border-red-400' : 'border-stone-200'
     }`;
 
   return (
     <div className="fixed inset-0 z-[60]">
       <div
-        className="absolute inset-0 bg-black/50"
+        className={`absolute inset-0 bg-black/50 transition-opacity duration-200 ${
+          mount.visible ? 'opacity-100' : 'opacity-0'
+        }`}
         onClick={close}
         aria-hidden="true"
       />
-      <div className="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl flex flex-col">
+      <div
+        className={`absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
+          mount.visible ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
         <div className="flex items-center justify-between p-5 border-b border-stone-100">
           <div className="flex items-center gap-2">
             {step === 'details' ? (
               <button
                 onClick={() => setStep('cart')}
-                className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-stone-100 active:scale-95 transition-all"
                 aria-label="Back to cart"
               >
                 <ArrowLeft className="w-5 h-5 text-stone-600" />
@@ -187,7 +232,7 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
           </div>
           <button
             onClick={close}
-            className="p-2 rounded-lg hover:bg-stone-100 transition-colors"
+            className="p-2 rounded-lg hover:bg-stone-100 active:scale-95 transition-all"
             aria-label="Close cart"
           >
             <X className="w-5 h-5 text-stone-600" />
@@ -195,26 +240,23 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
         </div>
 
         {step === 'done' ? (
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-6 animate-in fade-in duration-300">
             <div className="text-center pt-4">
-              <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+              <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4 animate-in zoom-in duration-300">
                 <PartyPopper className="w-10 h-10 text-emerald-600" />
               </div>
               <h4 className="text-xl font-extrabold text-stone-900 mb-1">
-                Demo order confirmed!
+                Order confirmed!
               </h4>
+              <p className="text-sm text-stone-500 mb-1">
+                Thank you, {confirmedMeta.name}! {confirmedMeta.restaurant} is
+                preparing your food.
+              </p>
               <p className="text-sm text-stone-500 mb-4">
                 Reference <span className="font-mono font-bold text-stone-800">{orderRef}</span>
+                {' • '}Arriving in ~30 min
               </p>
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm text-amber-800 mb-5 text-left">
-                This is a frontend demonstration — no real order was placed,
-                no rider was dispatched and no payment was taken.
-              </div>
               <dl className="bg-stone-50 rounded-xl p-4 text-sm text-left space-y-2 mb-6">
-                <div className="flex justify-between">
-                  <dt className="text-stone-500">Customer</dt>
-                  <dd className="font-semibold text-stone-800">{confirmedMeta.name}</dd>
-                </div>
                 <div className="flex justify-between">
                   <dt className="text-stone-500">Deliver to</dt>
                   <dd className="font-semibold text-stone-800">
@@ -222,22 +264,32 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
                   </dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-stone-500">Illustrative total</dt>
+                  <dt className="text-stone-500">Total</dt>
                   <dd className="font-extrabold text-stone-900">
                     {formatNaira(confirmedTotal)}
                   </dd>
                 </div>
               </dl>
               <button
+                onClick={() => {
+                  close();
+                  onTrackOrder();
+                }}
+                className="w-full py-3.5 bg-orange-600 text-white font-semibold rounded-xl shadow-md hover:bg-orange-700 hover:shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+              >
+                <Navigation className="w-5 h-5" />
+                Track Your Order
+              </button>
+              <button
                 onClick={close}
-                className="w-full py-3.5 bg-orange-600 text-white font-semibold rounded-xl shadow-md hover:bg-orange-700 transition-colors"
+                className="w-full mt-2 py-3 bg-stone-100 text-stone-700 font-semibold rounded-xl hover:bg-stone-200 active:scale-[0.98] transition-all"
               >
                 Back to browsing
               </button>
             </div>
           </div>
         ) : items.length === 0 && step === 'cart' ? (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-300">
             <div className="w-20 h-20 rounded-full bg-stone-100 flex items-center justify-center mb-4">
               <ShoppingBag className="w-10 h-10 text-stone-300" />
             </div>
@@ -245,20 +297,19 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
               Your cart is empty
             </h3>
             <p className="text-stone-500 mb-6">
-              Browse the sample menus and add some jollof, suya or shawarma.
+              Browse the menu and add some jollof, suya or shawarma.
             </p>
             <button
               onClick={close}
-              className="px-6 py-3 bg-orange-600 text-white font-semibold rounded-xl shadow-md hover:bg-orange-700 transition-colors"
+              className="px-6 py-3 bg-orange-600 text-white font-semibold rounded-xl shadow-md hover:bg-orange-700 active:scale-[0.98] transition-all"
             >
               Browse Meals
             </button>
           </div>
         ) : step === 'details' ? (
-          <div className="flex-1 overflow-y-auto p-5">
-            <p className="text-sm text-stone-500 bg-stone-50 border border-stone-200 rounded-xl p-3 mb-5">
-              Demonstration checkout — details stay in your browser and are
-              never sent anywhere.
+          <div className="flex-1 overflow-y-auto p-5 animate-in fade-in slide-in-from-right duration-300">
+            <p className="text-sm font-medium text-stone-700 bg-orange-50 border border-orange-100 rounded-xl p-3 mb-5">
+              Where should we deliver your order?
             </p>
             <div className="space-y-4">
               <div>
@@ -275,7 +326,7 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
                   className={inputClass(!!errors.fullName)}
                 />
                 {errors.fullName && (
-                  <p className="text-xs text-red-600 mt-1">{errors.fullName}</p>
+                  <p className="text-xs text-red-600 mt-1 animate-in fade-in duration-200">{errors.fullName}</p>
                 )}
               </div>
               <div>
@@ -292,7 +343,7 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
                   className={inputClass(!!errors.phone)}
                 />
                 {errors.phone && (
-                  <p className="text-xs text-red-600 mt-1">{errors.phone}</p>
+                  <p className="text-xs text-red-600 mt-1 animate-in fade-in duration-200">{errors.phone}</p>
                 )}
               </div>
               <div>
@@ -309,7 +360,7 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
                   className={inputClass(!!errors.address)}
                 />
                 {errors.address && (
-                  <p className="text-xs text-red-600 mt-1">{errors.address}</p>
+                  <p className="text-xs text-red-600 mt-1 animate-in fade-in duration-200">{errors.address}</p>
                 )}
               </div>
               <div>
@@ -330,7 +381,7 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
                   ))}
                 </select>
                 {errors.area && (
-                  <p className="text-xs text-red-600 mt-1">{errors.area}</p>
+                  <p className="text-xs text-red-600 mt-1 animate-in fade-in duration-200">{errors.area}</p>
                 )}
               </div>
               <div>
@@ -360,7 +411,7 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
                 </div>
               )}
               <div className="flex justify-between text-stone-500">
-                <span>Delivery fee (illustrative)</span>
+                <span>Delivery fee</span>
                 <span className="font-medium text-stone-700">
                   {deliveryFee === 0 ? (
                     <span className="text-emerald-600 font-semibold">FREE</span>
@@ -378,14 +429,14 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
             </div>
 
             <button
-              onClick={placeDemoOrder}
-              className="mt-4 w-full py-3.5 bg-orange-600 text-white font-semibold rounded-xl shadow-md hover:bg-orange-700 transition-colors flex items-center justify-center gap-2"
+              onClick={placeOrder}
+              className="mt-4 w-full py-3.5 bg-orange-600 text-white font-semibold rounded-xl shadow-md hover:bg-orange-700 hover:shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2"
             >
-              Place demo order
+              Place order
               <CheckCircle2 className="w-5 h-5" />
             </button>
             <p className="text-xs text-stone-400 text-center mt-3">
-              No payment page follows — this demo ends at confirmation.
+              Cash and card accepted on delivery.
             </p>
           </div>
         ) : (
@@ -394,7 +445,7 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="flex gap-3 p-3 rounded-xl bg-stone-50 border border-stone-100"
+                  className="flex gap-3 p-3 rounded-xl bg-stone-50 border border-stone-100 animate-in fade-in duration-200"
                 >
                   <FoodImage
                     src={item.image}
@@ -413,7 +464,7 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
                       </div>
                       <button
                         onClick={() => removeItem(item.id)}
-                        className="text-stone-400 hover:text-red-500 transition-colors flex-shrink-0"
+                        className="text-stone-400 hover:text-red-500 active:scale-90 transition-all flex-shrink-0"
                         aria-label={`Remove ${item.name} from cart`}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -423,7 +474,7 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
                       <div className="flex items-center gap-1.5 bg-white rounded-lg p-0.5 shadow-sm border border-stone-100">
                         <button
                           onClick={() => updateQuantity(item.id, -1)}
-                          className="w-7 h-7 rounded-md hover:bg-orange-50 text-stone-600 flex items-center justify-center transition-colors"
+                          className="w-7 h-7 rounded-md hover:bg-orange-50 active:scale-90 text-stone-600 flex items-center justify-center transition-all"
                           aria-label={`Decrease quantity of ${item.name}`}
                         >
                           <Minus className="w-3.5 h-3.5" />
@@ -433,7 +484,7 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
                         </span>
                         <button
                           onClick={() => updateQuantity(item.id, 1)}
-                          className="w-7 h-7 rounded-md hover:bg-orange-50 text-stone-600 flex items-center justify-center transition-colors"
+                          className="w-7 h-7 rounded-md hover:bg-orange-50 active:scale-90 text-stone-600 flex items-center justify-center transition-all"
                           aria-label={`Increase quantity of ${item.name}`}
                         >
                           <Plus className="w-3.5 h-3.5" />
@@ -459,7 +510,7 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
                   <Ticket className="w-4 h-4 text-orange-600" /> Promo code
                 </p>
                 {promoValid && appliedPromo ? (
-                  <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2.5">
+                  <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2.5 animate-in fade-in zoom-in duration-200">
                     <span className="text-sm font-mono font-bold text-emerald-800">
                       {appliedPromo.code}
                     </span>
@@ -488,14 +539,14 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
                     />
                     <button
                       onClick={handleApplyPromo}
-                      className="px-4 py-2.5 bg-stone-900 text-white text-sm font-semibold rounded-xl hover:bg-stone-700 transition-colors flex-shrink-0"
+                      className="px-4 py-2.5 bg-stone-900 text-white text-sm font-semibold rounded-xl hover:bg-stone-700 active:scale-95 transition-all flex-shrink-0"
                     >
                       Apply
                     </button>
                   </div>
                 )}
                 {appliedPromo && !promoValid && (
-                  <p className="flex items-start gap-1.5 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2 mt-2">
+                  <p className="flex items-start gap-1.5 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2 mt-2 animate-in fade-in duration-200">
                     <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                     {appliedPromo.code} needs a minimum order of{' '}
                     {formatNaira(appliedPromo.minSubtotal)} — add more items to
@@ -504,7 +555,7 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
                 )}
                 {promoMessage && (
                   <p
-                    className={`flex items-start gap-1.5 text-xs mt-2 ${
+                    className={`flex items-start gap-1.5 text-xs mt-2 animate-in fade-in duration-200 ${
                       promoMessage.type === 'success'
                         ? 'text-emerald-700'
                         : 'text-red-600'
@@ -535,7 +586,7 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
                 </div>
               )}
               <div className="flex justify-between text-sm text-stone-500">
-                <span>Delivery fee (illustrative)</span>
+                <span>Delivery fee</span>
                 <span className="font-medium text-stone-700">
                   {deliveryFee === 0 ? (
                     <span className="text-emerald-600 font-semibold">FREE</span>
@@ -552,7 +603,7 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
               ) : (
                 subtotal > 0 && (
                   <p className="text-xs text-emerald-700 bg-emerald-50 rounded-lg p-2">
-                    You have unlocked FREE delivery (illustrative).
+                    You have unlocked FREE delivery.
                   </p>
                 )
               )}
@@ -564,7 +615,7 @@ export default function CartDrawer({ defaultArea }: CartDrawerProps) {
               </div>
               <button
                 onClick={startCheckout}
-                className="w-full py-3.5 bg-orange-600 text-white font-semibold rounded-xl shadow-md hover:bg-orange-700 transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3.5 bg-orange-600 text-white font-semibold rounded-xl shadow-md hover:bg-orange-700 hover:shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2"
               >
                 Checkout
                 <ArrowRight className="w-5 h-5" />
